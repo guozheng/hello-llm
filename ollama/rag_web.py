@@ -9,6 +9,15 @@ from langchain.llms import Ollama
 from langchain.chains import RetrievalQA
 
 def main():
+    MODEL_PROMPT_MAPPINGS = {
+        "llama2-uncensored": "rlm/rag-prompt-llama",
+        "llama2": "rlm/rag-prompt-llama",
+        "mistral": "rlm/rag-prompt-mistral",
+    }
+
+    MODEL_NAME = "llama2-uncensored"
+    PROMPT_NAME = MODEL_PROMPT_MAPPINGS[MODEL_NAME]
+
     # retrieve data from Web
 
     # confluence page needs auth, how to address that?
@@ -31,8 +40,8 @@ def main():
     print(docs)
 
     # QA chain
-    QA_CHAIN_PROMPT = hub.pull("rlm/rag-prompt-llama")
-    ollama = Ollama(model="llama2-uncensored", callback_manager=CallbackManager([StreamingStdOutCallbackHandler()]), verbose=True)
+    QA_CHAIN_PROMPT = hub.pull(PROMPT_NAME)
+    ollama = Ollama(model=MODEL_NAME, callback_manager=CallbackManager([StreamingStdOutCallbackHandler()]), verbose=True)
     qa_chain = RetrievalQA.from_chain_type(
         ollama,
         retriever=vectorstore.as_retriever(),
